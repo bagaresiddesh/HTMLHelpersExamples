@@ -1,0 +1,60 @@
+﻿@model CatSubCatViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddCategory").change(function () {
+            var categoryId = $(this).val();
+
+            $.getJSON("../Category/LoadSubCatByCategoryId", { categoryId: categoryId },
+                function (classesData) {
+                    var select = $("#ddSubCategory");
+                    select.empty();
+
+                    select.append($('<option/>', {
+                        value: 0,
+                        text: "Select a SubCategory"
+                    }));
+
+
+                    $.each(classesData, function (index, itemData) {
+                        console.log(itemData);
+
+                        select.append($('<option/>', {
+                            value: itemData.value,
+                            text: itemData.text
+                        }));
+                    });
+                });
+        });
+    });
+</script>
+
+<h2>Index</h2>
+
+@using (Html.BeginForm("IndexPost", "Home", FormMethod.Post))
+{
+    <span style="margin-right: 5px;">
+        @Html.DropDownListFor(Model => Model.Cm.CategoryName, new SelectList(ViewBag.categories, "CategoryId", "CategoryName"),
+            "Select a category", new { id = "ddCategory" })
+    </span>
+    <span style="margin-right: 5px;">
+        @Html.DropDownListFor(Model => Model.Scm.SubCategoryName, new SelectList(Enumerable.Empty<SelectListItem>(), "SubCategoryId", "SubCategoryName"),
+            "Select a subcategory", new { id = "ddSubCategory" })
+    </span>
+
+    @foreach (var item in ViewBag.gender)
+    {
+        <span style="margin-right: 5px;">
+            @Html.RadioButton("SelectedGender", item.Id, false, new { id = "SelectedGender" })
+            @item.Name
+        </span>
+    }
+
+    <input type="submit" value="Submit" class="btn btn-primary" />
+}
